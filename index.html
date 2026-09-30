@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Driven Smart Bidirectional Power Electronics Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Chart.js from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="bg-ambient-glow"></div>
+
+    <!-- Mobile Header/Toggle -->
+    <button class="sidebar-toggle-btn" id="mobile-toggle" aria-label="Toggle Sidebar">
+        <svg viewBox="0 0 24 24">
+            <path d="M3 12h18M3 6h18M3 18h18" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+    </button>
+
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar">
+        <div class="brand-section">
+            <div class="brand-logo">
+                <svg viewBox="0 0 24 24">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                </svg>
+            </div>
+            <div class="brand-info">
+                <h1>BiPower-IoT</h1>
+                <span>Power Grid System</span>
+            </div>
+        </div>
+
+        <nav>
+            <a class="nav-item active" data-page="overview">
+                <svg viewBox="0 0 24 24">
+                    <rect x="3" y="3" width="7" height="9" rx="1" />
+                    <rect x="14" y="3" width="7" height="5" rx="1" />
+                    <rect x="14" y="12" width="7" height="9" rx="1" />
+                    <rect x="3" y="16" width="7" height="5" rx="1" />
+                </svg>
+                Overview
+            </a>
+            <a class="nav-item" data-page="control">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
+                Power Control
+            </a>
+            <a class="nav-item" data-page="battery">
+                <svg viewBox="0 0 24 24">
+                    <rect x="2" y="7" width="16" height="10" rx="2" ry="2" />
+                    <path d="M22 11v2" />
+                </svg>
+                Battery
+            </a>
+            <a class="nav-item" data-page="ai-analysis">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
+                    <path d="M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" />
+                    <path d="M12 8v4l3 3" />
+                </svg>
+                AI Analysis
+            </a>
+            <a class="nav-item" data-page="settings">
+                <svg viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="3" />
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                </svg>
+                IoT & Settings
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="quick-status-row">
+                <span>ESP32 Link:</span>
+                <span class="status-indicator">
+                    <span class="status-dot error" id="sidebar-esp-dot"></span>
+                    <span id="sidebar-esp-text">OFFLINE</span>
+                </span>
+            </div>
+            <div class="quick-status-row" style="margin-bottom: 12px;">
+                <span>AI Core:</span>
+                <span class="status-indicator">
+                    <span class="status-dot" id="sidebar-ai-dot"></span>
+                    <span id="sidebar-ai-text">DISCONNECTED</span>
+                </span>
+            </div>
+            <div class="demo-badge-sidebar" id="sidebar-demo-badge">
+                DEMO MODE ACTIVE
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Section -->
+    <main>
+        <!-- Header -->
+        <header>
+            <div class="header-title-area">
+                <h2 id="page-title-display">Overview Dashboard</h2>
+                <p id="page-subtitle-display">Bidirectional Power Converter Systems Telemetry</p>
+            </div>
+            <div class="header-controls">
+                <!-- IP Input & Connect Panel -->
+                <div class="esp-ip-input-bar">
+                    <svg style="width:16px;height:16px;stroke:var(--text-muted);fill:none;stroke-width:2;" viewBox="0 0 24 24">
+                        <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
+                        <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
+                        <line x1="6" y1="6" x2="6.01" y2="6"/>
+                        <line x1="6" y1="18" x2="6.01" y2="18"/>
+                    </svg>
+                    <input type="text" id="esp-ip-address" placeholder="192.168.1.50" value="http://192.168.1.50">
+                    <button class="btn-connect" id="btn-esp-connect">Connect</button>
+                </div>
+                <!-- Global Emergency Stop -->
+                <button class="btn-estop" id="btn-global-estop">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M8 9h8v6H8z" />
+                    </svg>
+                    E-Stop
+                </button>
+            </div>
+        </header>
+
+        <!-- Content Frame -->
+        <div class="content-body">
+            <!-- Demo Banner -->
+            <div class="demo-banner" id="demo-banner-alert">
+                <div class="demo-banner-content">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                    <div class="demo-banner-text">
+                        <h4>DEMO MODE — ESP32 NOT CONNECTED</h4>
+                        <p>Visualizing simulated telemetry. Enter ESP32 IP above and click 'Connect' to stream real-time switching metrics.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 1: Overview Panel -->
+            <div class="page-panel active" id="page-overview">
+                <!-- KPI Statistics -->
+                <div class="kpi-grid">
+                    <!-- Voltage -->
+                    <div class="card primary-highlight kpi-card">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Battery Voltage</span>
+                            <div class="kpi-icon-wrapper">
+                                <svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                            </div>
+                        </div>
+                        <div class="kpi-body">
+                            <div>
+                                <span class="kpi-value" id="kpi-voltage">0.00</span>
+                                <span class="kpi-unit">V</span>
+                            </div>
+                            <span class="kpi-trend neutral" id="trend-voltage">--</span>
+                        </div>
+                    </div>
+                    <!-- Current -->
+                    <div class="card kpi-card">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Battery Current</span>
+                            <div class="kpi-icon-wrapper">
+                                <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                            </div>
+                        </div>
+                        <div class="kpi-body">
+                            <div>
+                                <span class="kpi-value" id="kpi-current">0.00</span>
+                                <span class="kpi-unit">A</span>
+                            </div>
+                            <span class="kpi-trend neutral" id="trend-current">--</span>
+                        </div>
+                    </div>
+                    <!-- Power -->
+                    <div class="card kpi-card">
+                        <div class="kpi-header">
+                            <span class="kpi-title">System Power</span>
+                            <div class="kpi-icon-wrapper">
+                                <svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0M12 2v10"/></svg>
+                            </div>
+                        </div>
+                        <div class="kpi-body">
+                            <div>
+                                <span class="kpi-value" id="kpi-power">0.00</span>
+                                <span class="kpi-unit">W</span>
+                            </div>
+                            <span class="kpi-trend neutral" id="trend-power">--</span>
+                        </div>
+                    </div>
+                    <!-- Battery SOC -->
+                    <div class="card kpi-card">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Battery SOC</span>
+                            <div class="kpi-icon-wrapper">
+                                <svg viewBox="0 0 24 24"><rect x="2" y="7" width="16" height="10" rx="2" ry="2"/><path d="M22 11v2"/></svg>
+                            </div>
+                        </div>
+                        <div class="kpi-body">
+                            <div>
+                                <span class="kpi-value" id="kpi-soc">0</span>
+                                <span class="kpi-unit">%</span>
+                            </div>
+                            <span class="kpi-trend neutral" id="trend-soc">--</span>
+                        </div>
+                    </div>
+                    <!-- MOSFET Temp -->
+                    <div class="card kpi-card">
+                        <div class="kpi-header">
+                            <span class="kpi-title">MOSFET Temperature</span>
+                            <div class="kpi-icon-wrapper">
+                                <svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+                            </div>
+                        </div>
+                        <div class="kpi-body">
+                            <div>
+                                <span class="kpi-value" id="kpi-mosfet-temp">0.0</span>
+                                <span class="kpi-unit">°C</span>
+                            </div>
+                            <span class="kpi-trend neutral" id="trend-mosfet-temp">--</span>
+                        </div>
+                    </div>
+                    <!-- Battery Temp -->
+                    <div class="card kpi-card">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Battery Temp</span>
+                            <div class="kpi-icon-wrapper">
+                                <svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a5 5 0 0 0 6 0V5a3 3 0 0 0-3-3z"/></svg>
+                            </div>
+                        </div>
+                        <div class="kpi-body">
+                            <div>
+                                <span class="kpi-value" id="kpi-battery-temp">0.0</span>
+                                <span class="kpi-unit">°C</span>
+                            </div>
+                            <span class="kpi-trend neutral" id="trend-battery-temp">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status Panel -->
+                <div class="status-indicators-panel">
+                    <div class="card status-card">
+                        <span class="status-badge" id="status-badge-charge" style="background-color: var(--color-neutral);"></span>
+                        <div class="status-info">
+                            <h4>Operating Mode</h4>
+                            <p id="status-text-charge">IDLE</p>
+                        </div>
+                    </div>
+                    <div class="card status-card">
+                        <span class="status-badge" id="status-badge-source" style="background-color: var(--color-neutral);"></span>
+                        <div class="status-info">
+                            <h4>DC Power Source</h4>
+                            <p id="status-text-source">DISCONNECTED</p>
+                        </div>
+                    </div>
+                    <div class="card status-card">
+                        <span class="status-badge" id="status-badge-mosfet" style="background-color: var(--color-neutral);"></span>
+                        <div class="status-info">
+                            <h4>MOSFET Gateway</h4>
+                            <p id="status-text-mosfet">DISABLED</p>
+                        </div>
+                    </div>
+                    <div class="card status-card">
+                        <span class="status-badge" id="status-badge-safety" style="background-color: var(--color-success);"></span>
+                        <div class="status-info">
+                            <h4>Safety Core Checks</h4>
+                            <p id="status-text-safety">NOMINAL</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Real-Time Charts -->
+                <div class="charts-grid">
+                    <div class="card chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">
+                                <h3>Voltage & Current over Time</h3>
+                                <p>Monitored parameters on power converters</p>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="chart-voltage-current"></canvas>
+                        </div>
+                    </div>
+                    <div class="card chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">
+                                <h3>System Power & Temperatures</h3>
+                                <p>Thermal profiling and switching power output</p>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="chart-power-temp"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 2: Power Control Panel -->
+            <div class="page-panel" id="page-control">
+                <div class="control-grid">
+                    <!-- Left Side: Diagram and Switch Mode selectors -->
+                    <div class="card primary-highlight control-card">
+                        <div>
+                            <div class="chart-header" style="margin-bottom: 24px;">
+                                <div class="chart-title">
+                                    <h3>Bidirectional Power Topology Flow</h3>
+                                    <p>Visual map of switching converter state and energy direction</p>
+                                </div>
+                            </div>
+                            <!-- Power Flow SVG Map -->
+                            <div class="diagram-container">
+                                <svg class="power-flow-svg" viewBox="0 0 600 200">
+                                    <!-- Definitions for arrows -->
+                                    <defs>
+                                        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                            <path d="M 0 1 L 10 5 L 0 9 z" fill="#475569" />
+                                        </marker>
+                                    </defs>
+
+                                    <!-- Connections (Flow Lines) -->
+                                    <!-- DC Source to MOSFET Converter -->
+                                    <path id="flow-source-conv" class="flow-line flow-inactive" d="M 120 100 L 270 100" stroke-width="4" marker-end="url(#arrow)" />
+                                    <!-- Battery to MOSFET Converter -->
+                                    <path id="flow-conv-batt" class="flow-line flow-inactive" d="M 480 100 L 330 100" stroke-width="4" marker-end="url(#arrow)" />
+
+                                    <!-- DC Source Node -->
+                                    <g id="node-source" class="node-group">
+                                        <circle class="node-circle" cx="80" cy="100" r="36" />
+                                        <text x="80" y="96" fill="#fff" font-size="10" font-weight="700" text-anchor="middle" font-family="sans-serif">DC SOURCE</text>
+                                        <text x="80" y="112" fill="var(--text-secondary)" font-size="9" text-anchor="middle" font-family="sans-serif" id="diag-source-v">0V</text>
+                                    </g>
+
+                                    <!-- MOSFET Converter Node -->
+                                    <g id="node-converter" class="node-group">
+                                        <circle class="node-circle" cx="300" cy="100" r="36" />
+                                        <text x="300" y="96" fill="#fff" font-size="9" font-weight="700" text-anchor="middle" font-family="sans-serif">MOSFET GATE</text>
+                                        <text x="300" y="112" fill="var(--text-secondary)" font-size="9" text-anchor="middle" font-family="sans-serif" id="diag-mosfet-status">OFF</text>
+                                    </g>
+
+                                    <!-- Battery Pack Node -->
+                                    <g id="node-battery" class="node-group">
+                                        <circle class="node-circle" cx="520" cy="100" r="36" />
+                                        <text x="520" y="96" fill="#fff" font-size="10" font-weight="700" text-anchor="middle" font-family="sans-serif">BATTERY</text>
+                                        <text x="520" y="112" fill="var(--text-secondary)" font-size="9" text-anchor="middle" font-family="sans-serif" id="diag-battery-soc">0%</text>
+                                    </g>
+                                </svg>
+                            </div>
+
+                            <!-- Mode Options Group -->
+                            <div class="control-options-group">
+                                <label class="mode-selector">
+                                    <input type="radio" name="power-mode" value="charge" checked>
+                                    <svg viewBox="0 0 24 24"><path d="M12 2v20M5 12h14"/></svg>
+                                    <h4>CHARGING MODE</h4>
+                                </label>
+                                <label class="mode-selector">
+                                    <input type="radio" name="power-mode" value="discharge">
+                                    <svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg>
+                                    <h4>DISCHARGE MODE</h4>
+                                </label>
+                                <label class="mode-selector">
+                                    <input type="radio" name="power-mode" value="bidirectional">
+                                    <svg viewBox="0 0 24 24"><path d="M17 2v20M7 2v20M17 22l5-5M17 2l-5 5M7 22l-5-5M7 2l5 5"/></svg>
+                                    <h4>BIDIRECTIONAL</h4>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Safety disclaimer block -->
+                        <div class="safety-warning-box">
+                            <div class="safety-header">
+                                <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+                                HIGH CURRENT Topologies — Safety Check Required
+                            </div>
+                            <p class="safety-body-text">
+                                Enabling gate switching runs the power MOSFETs and DC Converter circuitry. Always verify the safety boundaries (maximum current limit, voltage thresholds) on ESP32 before initiating.
+                            </p>
+                            <label class="safety-checkbox-label">
+                                <input type="checkbox" id="safety-disclaimer-check">
+                                I confirm hardware integrity and authorize power-flow.
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Right Side: Hardware control settings & live flags -->
+                    <div class="switch-status-panel">
+                        <div class="card settings-control-panel">
+                            <div class="chart-header" style="margin-bottom: 8px;">
+                                <div class="chart-title">
+                                    <h3>Converter Configurations</h3>
+                                </div>
+                            </div>
+
+                            <!-- PWM Duty Slider -->
+                            <div class="setting-slider-item">
+                                <div class="slider-label-row">
+                                    <span>PWM Duty Cycle (Switching Speed)</span>
+                                    <span class="slider-val-readout" id="readout-pwm">0%</span>
+                                </div>
+                                <input type="range" class="range-input" id="slider-pwm" min="0" max="100" value="0" disabled>
+                            </div>
+
+                            <!-- Voltage limit -->
+                            <div class="setting-slider-item">
+                                <div class="slider-label-row">
+                                    <span>Output Target Voltage Limit</span>
+                                    <span class="slider-val-readout" id="readout-v-limit">14.4 V</span>
+                                </div>
+                                <input type="range" class="range-input" id="slider-v-limit" min="10" max="25" step="0.1" value="14.4" disabled>
+                            </div>
+
+                            <!-- Current limit -->
+                            <div class="setting-slider-item">
+                                <div class="slider-label-row">
+                                    <span>Output Current Boundary Limit</span>
+                                    <span class="slider-val-readout" id="readout-i-limit">5.0 A</span>
+                                </div>
+                                <input type="range" class="range-input" id="slider-i-limit" min="1" max="15" step="0.1" value="5.0" disabled>
+                            </div>
+
+                            <button class="btn-primary" id="btn-apply-control" disabled>Apply Power Controls</button>
+                        </div>
+
+                        <!-- System Gate Diagnostic readouts -->
+                        <div class="card">
+                            <div class="chart-header" style="margin-bottom: 12px;">
+                                <div class="chart-title">
+                                    <h3>Gate Driver System Health</h3>
+                                </div>
+                            </div>
+                            <div class="diagnostic-item">
+                                <span class="diagnostic-label">
+                                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                                    MOSFET Switching State
+                                </span>
+                                <span class="diagnostic-value-pill danger-state" id="diag-gate-sw-state">OFF</span>
+                            </div>
+                            <div class="diagnostic-item">
+                                <span class="diagnostic-label">
+                                    <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                                    Gate Driver Signals
+                                </span>
+                                <span class="diagnostic-value-pill ok" id="diag-gate-driver-signal">NOMINAL</span>
+                            </div>
+                            <div class="diagnostic-item">
+                                <span class="diagnostic-label">
+                                    <svg viewBox="0 0 24 24"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+                                    Cooling Fan Speed
+                                </span>
+                                <span class="diagnostic-value-pill active-state" id="diag-fan-speed">IDLE</span>
+                            </div>
+                            <div class="diagnostic-item">
+                                <span class="diagnostic-label">
+                                    <svg viewBox="0 0 24 24"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/></svg>
+                                    Fuse Integrity Status
+                                </span>
+                                <span class="diagnostic-value-pill ok" id="diag-fuse-integrity">CONNECTED</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 3: Battery Management -->
+            <div class="page-panel" id="page-battery">
+                <div class="battery-dashboard-layout">
+                    <!-- Left: Graphic representation -->
+                    <div class="card primary-highlight battery-visual-panel">
+                        <div class="chart-header" style="margin-bottom: 24px; width: 100%;">
+                            <div class="chart-title">
+                                <h3>Battery Cell Monitor</h3>
+                                <p>Core storage pack telemetry analysis</p>
+                            </div>
+                        </div>
+
+                        <!-- Battery Cell animation graphic -->
+                        <div class="battery-cell-outer">
+                            <div class="battery-cell-inner">
+                                <div class="battery-level-charge" id="battery-cell-graphic"></div>
+                            </div>
+                        </div>
+
+                        <div class="battery-soc-huge"><span id="battery-huge-soc">0</span><span style="font-size:1.5rem;color:var(--text-muted);">%</span></div>
+                        <p style="font-size:0.8rem;color:var(--text-secondary);text-transform:uppercase;font-weight:600;margin-top:4px;" id="battery-huge-state">IDLE</p>
+
+                        <div class="battery-health-meter">
+                            <span class="battery-health-label">Battery Pack SOH (Health)</span>
+                            <span class="battery-health-value" id="battery-health-pct">100%</span>
+                        </div>
+                        <div class="battery-health-meter" style="margin-top:10px;">
+                            <span class="battery-health-label">Core Status Diagnostics</span>
+                            <span class="battery-health-status-tag" id="battery-health-status">HEALTHY</span>
+                        </div>
+                    </div>
+
+                    <!-- Right: Historical plots or lists -->
+                    <div class="switch-status-panel">
+                        <div class="card">
+                            <div class="chart-header" style="margin-bottom: 12px;">
+                                <div class="chart-title">
+                                    <h3>Battery Diagnostics Telemetry</h3>
+                                </div>
+                            </div>
+                            <div class="ai-stat-row">
+                                <span class="ai-stat-label">Continuous Output Power</span>
+                                <span class="ai-stat-val" id="diag-batt-power">0.0 W</span>
+                            </div>
+                            <div class="ai-stat-row">
+                                <span class="ai-stat-label">Internal Estimated Impedance</span>
+                                <span class="ai-stat-val" id="diag-batt-impedance">45 mΩ</span>
+                            </div>
+                            <div class="ai-stat-row">
+                                <span class="ai-stat-label">Total Charge Cycles Count</span>
+                                <span class="ai-stat-val" id="diag-batt-cycles">42 cycles</span>
+                            </div>
+                            <div class="ai-stat-row">
+                                <span class="ai-stat-label">Cell Temperature Status</span>
+                                <span class="ai-stat-val healthy" id="diag-batt-temp-status">NORMAL</span>
+                            </div>
+                            <div class="ai-stat-row">
+                                <span class="ai-stat-label">Voltage High Boundary threshold</span>
+                                <span class="ai-stat-val" id="diag-batt-high-threshold">15.0V</span>
+                            </div>
+                            <div class="ai-stat-row">
+                                <span class="ai-stat-label">Voltage Low Cutoff threshold</span>
+                                <span class="ai-stat-val" id="diag-batt-low-threshold">10.0V</span>
+                            </div>
+                        </div>
+
+                        <!-- Battery historical charts -->
+                        <div class="card" style="flex:1; min-height:220px;">
+                            <div class="chart-header">
+                                <div class="chart-title">
+                                    <h3>Battery Temperature and Health Trend</h3>
+                                    <p>Historical telemetry logs</p>
+                                </div>
+                            </div>
+                            <div class="chart-wrapper">
+                                <canvas id="chart-battery-history"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 4: AI Analysis -->
+            <div class="page-panel" id="page-ai-analysis">
+                <div class="ai-analysis-grid">
+                    <!-- Left: Diagnostic Console -->
+                    <div class="ai-diagnostic-console">
+                        <div class="console-header">
+                            <div class="console-title-group">
+                                <svg viewBox="0 0 24 24"><path d="M12 2c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><circle cx="12" cy="12" r="3"/></svg>
+                                <span class="console-title">Predictive Diagnostic Neural Engine</span>
+                            </div>
+                            <span class="console-dot"></span>
+                        </div>
+                        <div class="console-body" id="console-output">
+                            <!-- Lines generated dynamically -->
+                            <div class="console-line">
+                                <span class="timestamp">[17:38:00]</span>
+                                <span class="status-tag-info">[SYS]</span>
+                                Initializing telemetry analyzer client socket...
+                            </div>
+                            <div class="console-line">
+                                <span class="timestamp">[17:38:01]</span>
+                                <span class="status-tag-ok">[SYS]</span>
+                                Active telemetry stream: Listening on local simulation bus.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: AI Evaluation Cards -->
+                    <div class="ai-diagnosis-details-container">
+                        <!-- AI Condition Card -->
+                        <div class="card primary-highlight">
+                            <div class="chart-header" style="margin-bottom:16px;">
+                                <div class="chart-title">
+                                    <h3>AI Diagnostic Report</h3>
+                                    <p>Calculated health states & anomaly classifications</p>
+                                </div>
+                            </div>
+                            <div class="ai-stat-row">
+                                <span class="ai-stat-label">System Condition</span>
+                                <span class="ai-stat-val healthy" id="ai-system-cond">HEALTHY</span>
+                            </div>
+                            <div class="ai-stat-row">
+                                <span class="ai-stat-label">Voltage Evaluation</span>
+                                <span class="ai-stat-val" id="ai-voltage-cond">Normal</span>
+                            </div>
+                            <div class="ai-stat-row">
+                                <span class="ai-stat-label">Current Evaluation</span>
+                                <span class="ai-stat-val" id="ai-current-cond">Normal</span>
+                            </div>
+                            <div class="ai-stat-row">
+                                <span class="ai-stat-label">MOSFET Heat Status</span>
+                                <span class="ai-stat-val" id="ai-mosfet-cond">Normal</span>
+                            </div>
+                            <div class="ai-stat-row">
+                                <span class="ai-stat-label">Battery Thermal State</span>
+                                <span class="ai-stat-val" id="ai-battery-cond">Normal</span>
+                            </div>
+                            <div class="ai-stat-row" style="margin-top: 10px; padding-top:10px; border-top:1px solid rgba(255, 255, 255, 0.1)">
+                                <span class="ai-stat-label">Failure Anomaly Score</span>
+                                <span class="ai-stat-val" id="ai-failure-score" style="font-family:var(--font-mono);font-weight:700;color:var(--color-success)">1.2%</span>
+                            </div>
+                            <div class="ai-stat-row">
+                                <span class="ai-stat-label">Risk Assessment Level</span>
+                                <span class="ai-stat-val healthy" id="ai-risk-level" style="font-weight:700">LOW</span>
+                            </div>
+                        </div>
+
+                        <!-- Recommendations Card -->
+                        <div class="ai-recommendation-box">
+                            <div class="ai-recom-header">
+                                <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                Diagnostic Maintenance Prescription
+                            </div>
+                            <p class="ai-recom-body" id="ai-maintenance-recom">
+                                No abnormal behavior detected. System loads are within specified nominal configurations. No hardware maintenance tasks required.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 5: IoT & Settings Panel -->
+            <div class="page-panel" id="page-settings">
+                <div class="settings-grid">
+                    <!-- Column 1: Device Configuration & Link status -->
+                    <div class="card primary-highlight">
+                        <div class="chart-header" style="margin-bottom: 20px;">
+                            <div class="chart-title">
+                                <h3>Network & Device Links</h3>
+                                <p>System control loop update parameters</p>
+                            </div>
+                        </div>
+                        <div class="form-field" style="margin-bottom: 16px;">
+                            <label for="settings-ip-address">ESP32 Hardware IP URL</label>
+                            <input type="text" id="settings-ip-address" placeholder="http://192.168.1.50" value="http://192.168.1.50">
+                        </div>
+                        <div class="form-field" style="margin-bottom: 16px;">
+                            <label for="settings-ai-address">AI Diagnostic Backend URL</label>
+                            <input type="text" id="settings-ai-address" placeholder="http://localhost:5000" value="http://localhost:5000">
+                        </div>
+                        <div class="form-group-grid">
+                            <div class="form-field">
+                                <label for="settings-refresh">Poll Refresh Rate</label>
+                                <select id="settings-refresh">
+                                    <option value="1000">1.0 sec (Real-time)</option>
+                                    <option value="2000" selected>2.0 sec (Standard)</option>
+                                    <option value="5000">5.0 sec (Low Power)</option>
+                                    <option value="10000">10.0 sec (Telemetry Log)</option>
+                                </select>
+                            </div>
+                            <div class="form-field">
+                                <label>Switching Topologies</label>
+                                <select id="settings-topology-config">
+                                    <option value="buck">Buck Converter Mode</option>
+                                    <option value="boost">Boost Converter Mode</option>
+                                    <option value="bidirectional" selected>Automated Switching</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="margin-top:24px; display:flex; gap:16px;">
+                            <button class="btn-primary" id="btn-save-network">Save Settings</button>
+                            <button class="btn-secondary" id="btn-reset-connection">Reset Links</button>
+                        </div>
+
+                        <!-- Live Detailed Connection Diagnostic list -->
+                        <div style="margin-top: 24px; border-top:1px solid var(--border-color); padding-top:20px;">
+                            <div class="ai-stat-row">
+                                <span class="ai-stat-label">Wi-Fi Connection RSSI</span>
+                                <span class="ai-stat-val" id="diag-wifi-rssi">--</span>
+                            </div>
+                            <div class="ai-stat-row">
+                                <span class="ai-stat-label">Sensor Bus Probe Status</span>
+                                <span class="ai-stat-val" id="diag-sensors-probe">--</span>
+                            </div>
+                            <div class="ai-stat-row">
+                                <span class="ai-stat-label">REST Gateway Link Latency</span>
+                                <span class="ai-stat-val" id="diag-api-latency">--</span>
+                            </div>
+                            <div class="ai-stat-row">
+                                <span class="ai-stat-label">AI Host Endpoint Connection</span>
+                                <span class="ai-stat-val" id="diag-ai-connection">--</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Column 2: Safety Threshold Boundaries Configuration -->
+                    <div class="card">
+                        <div class="chart-header" style="margin-bottom: 20px;">
+                            <div class="chart-title">
+                                <h3>Safety Gate Limits & Shutdown Thresholds</h3>
+                                <p>Hardware safety overrides stored on ESP32 EEPROM</p>
+                            </div>
+                        </div>
+
+                        <div class="form-group-grid">
+                            <div class="form-field">
+                                <label for="threshold-max-v">Over-Voltage Limit (V)</label>
+                                <input type="number" id="threshold-max-v" min="5" max="30" step="0.1" value="16.0">
+                            </div>
+                            <div class="form-field">
+                                <label for="threshold-min-v">Under-Voltage Limit (V)</label>
+                                <input type="number" id="threshold-min-v" min="5" max="25" step="0.1" value="9.6">
+                            </div>
+                        </div>
+
+                        <div class="form-group-grid">
+                            <div class="form-field">
+                                <label for="threshold-max-i">Over-Current Limit (A)</label>
+                                <input type="number" id="threshold-max-i" min="1" max="20" step="0.1" value="10.0">
+                            </div>
+                            <div class="form-field">
+                                <label for="threshold-max-mosfet-temp">Max MOSFET Temp (°C)</label>
+                                <input type="number" id="threshold-max-mosfet-temp" min="40" max="100" step="1" value="75">
+                            </div>
+                        </div>
+
+                        <div class="form-group-grid">
+                            <div class="form-field">
+                                <label for="threshold-max-batt-temp">Max Battery Temp (°C)</label>
+                                <input type="number" id="threshold-max-batt-temp" min="35" max="80" step="1" value="50">
+                            </div>
+                            <div class="form-field">
+                                <label for="threshold-critical-soc">Low Battery Cutoff SOC (%)</label>
+                                <input type="number" id="threshold-critical-soc" min="5" max="30" step="1" value="15">
+                            </div>
+                        </div>
+
+                        <button class="btn-primary" style="background-color: var(--color-warning);" id="btn-save-thresholds">Upload Protection Limits</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+
+# Arduino / PlatformIO
+.pio/
+.vscode/
+*.hex
+*.bin
+*.elf
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+*.swp
+*.bak
